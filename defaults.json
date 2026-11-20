@@ -1,0 +1,271 @@
+{
+  "v": 1,
+  "macros": [
+    {
+      "name": "DJ",
+      "bipolar": true,
+      "targets": [
+        {
+          "bus": "master",
+          "comp": "fx2",
+          "param": "cutoff",
+          "module": "filter",
+          "from": 1,
+          "to": 0.15,
+          "side": "neg",
+          "curve": 0.7
+        },
+        {
+          "bus": "master",
+          "comp": "fx2",
+          "param": "resonance",
+          "module": "filter",
+          "from": 0.2,
+          "to": 0.5,
+          "side": "neg"
+        },
+        {
+          "bus": "master",
+          "comp": "fx1",
+          "param": "cutoff",
+          "module": "filter",
+          "from": 0,
+          "to": 0.65,
+          "side": "pos",
+          "curve": 0.7
+        },
+        {
+          "bus": "master",
+          "comp": "fx1",
+          "param": "resonance",
+          "module": "filter",
+          "from": 0.2,
+          "to": 0.5,
+          "side": "pos"
+        },
+        {
+          "bus": "master",
+          "comp": "fx4",
+          "param": "wet",
+          "module": "freeverb",
+          "from": 0,
+          "to": 0.15,
+          "side": "both"
+        }
+      ]
+    },
+    {
+      "name": "Delay",
+      "targets": [
+        {
+          "bus": "master",
+          "comp": "fx3",
+          "param": "mix",
+          "module": "tapedelay",
+          "from": 0,
+          "to": 0.5
+        },
+        {
+          "bus": "master",
+          "comp": "fx3",
+          "param": "feedback",
+          "module": "tapedelay",
+          "from": 0.45,
+          "to": 0.7
+        }
+      ]
+    },
+    {
+      "name": "Reverb",
+      "targets": [
+        {
+          "bus": "master",
+          "comp": "fx4",
+          "param": "wet",
+          "module": "freeverb",
+          "from": 0,
+          "to": 0.5
+        },
+        {
+          "bus": "master",
+          "comp": "fx4",
+          "param": "room_size",
+          "module": "freeverb",
+          "from": 0.85,
+          "to": 0.97
+        }
+      ]
+    },
+    {
+      "name": "Break",
+      "targets": [
+        {
+          "bus": "master",
+          "comp": "fx1",
+          "param": "cutoff",
+          "module": "filter",
+          "from": 0,
+          "to": 0.45
+        },
+        {
+          "bus": "master",
+          "comp": "fx3",
+          "param": "mix",
+          "module": "tapedelay",
+          "from": 0,
+          "to": 0.25
+        },
+        {
+          "bus": "master",
+          "comp": "fx4",
+          "param": "wet",
+          "module": "freeverb",
+          "from": 0,
+          "to": 0.35
+        }
+      ]
+    },
+    {
+      "name": "Build",
+      "targets": [
+        {
+          "bus": "master",
+          "comp": "fx1",
+          "param": "cutoff",
+          "module": "filter",
+          "from": 0,
+          "to": 0.62,
+          "curve": 2
+        },
+        {
+          "bus": "master",
+          "comp": "fx1",
+          "param": "resonance",
+          "module": "filter",
+          "from": 0.2,
+          "to": 0.55
+        },
+        {
+          "bus": "master",
+          "comp": "fx3",
+          "param": "feedback",
+          "module": "tapedelay",
+          "from": 0.45,
+          "to": 0.62
+        },
+        {
+          "bus": "master",
+          "comp": "fx4",
+          "param": "wet",
+          "module": "freeverb",
+          "from": 0,
+          "to": 0.45
+        }
+      ]
+    },
+    {
+      "name": "Dub",
+      "targets": [
+        {
+          "bus": "master",
+          "comp": "fx3",
+          "param": "mix",
+          "module": "tapedelay",
+          "from": 0,
+          "to": 0.45
+        },
+        {
+          "bus": "master",
+          "comp": "fx3",
+          "param": "feedback",
+          "module": "tapedelay",
+          "from": 0.45,
+          "to": 0.72
+        },
+        {
+          "bus": "master",
+          "comp": "fx2",
+          "param": "cutoff",
+          "module": "filter",
+          "from": 1,
+          "to": 0.65
+        }
+      ]
+    },
+    {
+      "name": "Wash",
+      "targets": [
+        {
+          "bus": "master",
+          "comp": "fx4",
+          "param": "wet",
+          "module": "freeverb",
+          "from": 0,
+          "to": 0.6
+        },
+        {
+          "bus": "master",
+          "comp": "fx4",
+          "param": "room_size",
+          "module": "freeverb",
+          "from": 0.85,
+          "to": 0.98
+        },
+        {
+          "bus": "master",
+          "comp": "fx2",
+          "param": "cutoff",
+          "module": "filter",
+          "from": 1,
+          "to": 0.5
+        },
+        {
+          "bus": "master",
+          "comp": "fx3",
+          "param": "mix",
+          "module": "tapedelay",
+          "from": 0,
+          "to": 0.3
+        }
+      ]
+    },
+    {
+      "name": "Echo Out",
+      "targets": [
+        {
+          "bus": "master",
+          "comp": "fx3",
+          "param": "mix",
+          "module": "tapedelay",
+          "from": 0,
+          "to": 0.6
+        },
+        {
+          "bus": "master",
+          "comp": "fx3",
+          "param": "feedback",
+          "module": "tapedelay",
+          "from": 0.45,
+          "to": 0.8
+        },
+        {
+          "bus": "master",
+          "comp": "fx1",
+          "param": "cutoff",
+          "module": "filter",
+          "from": 0,
+          "to": 0.5,
+          "curve": 2
+        },
+        {
+          "bus": "master",
+          "comp": "fx4",
+          "param": "wet",
+          "module": "freeverb",
+          "from": 0,
+          "to": 0.4
+        }
+      ]
+    }
+  ]
+}

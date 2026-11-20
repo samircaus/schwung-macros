@@ -1,0 +1,26 @@
+{
+  "id": "macros",
+  "name": "Macros",
+  "abbrev": "MAC",
+  "version": "0.4.0",
+  "description": "8 performance macros per Set: each knob moves any number of slot, send and Master FX settings, including two-sided DJ-style macros, while Move keeps its pads, steps and transport. Edit them in the browser.",
+  "author": "Samir Caus",
+  "license": "MIT",
+  "ui": "ui.js",
+  "api_version": 2,
+  "component_type": "overtake",
+  "capabilities": {
+    "component_type": "overtake",
+    "claims_master_knob": false,
+    "skip_led_clear": true,
+    "button_passthrough": [
+      85,
+      86,
+      118,
+      58
+    ],
+    "raw_midi": true,
+    "raw_ui": true
+  },
+  "min_host_version": "1.9.4"
+}

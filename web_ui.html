@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Macros editor</title>
+<link rel="stylesheet" href="assets/editor.css">
+</head>
+<body>
+<header>
+  <div class="title">
+    <h1>Macros</h1>
+    <select id="set-picker" aria-label="Set"></select>
+    <span id="live" class="pill">connecting…</span>
+  </div>
+  <div class="actions">
+    <button id="copy-from" type="button" title="Start from another Set's macros">Copy from…</button>
+    <button id="revert" type="button">Revert</button>
+    <button id="save" type="button" class="primary">Save</button>
+  </div>
+</header>
+<p id="framed" class="notice" hidden>This editor needs its own tab. <a id="open-tab" target="_blank" rel="noopener">Open it</a>.</p>
+<p id="status" class="status" role="status"></p>
+<main id="grid" aria-live="polite"></main>
+<footer>
+  <p>Knobs 1–8 on Move are macros 1–8. Each target moves one effect setting between <b>From</b> (knob at 0) and <b>To</b> (knob at 100%). Several macros can share a setting; their moves add up. A <b>two-sided</b> macro rests in the middle: <b>Left</b> targets move when you turn left, <b>Right</b> ones when you turn right. Drag a macro's knob slider to hear it on Move. Saving takes effect on Move within two seconds; your knob positions on Move are kept.</p>
+</footer>
+<template id="card-tpl">
+  <section class="card">
+    <div class="card-head">
+      <span class="knob-no"></span>
+      <input class="name" maxlength="12" aria-label="Macro name">
+      <label class="toggle"><input type="checkbox" class="bipolar"> Two-sided</label>
+    </div>
+    <div class="swatches" role="radiogroup" aria-label="Colour"></div>
+    <div class="audition">
+      <input type="range" class="knob" min="0" max="1" step="0.01" value="0" aria-label="Try the macro">
+      <output class="knob-val">0%</output>
+    </div>
+    <ol class="targets"></ol>
+    <button type="button" class="add">+ Add target</button>
+  </section>
+</template>
+<template id="target-tpl">
+  <li class="target">
+    <select class="param" aria-label="Setting"></select>
+    <div class="range">
+      <label>From <input type="number" class="from" step="any"></label>
+      <button type="button" class="grab grab-from" title="Use the setting's current value on Move">●</button>
+      <label>To <input type="number" class="to" step="any"></label>
+      <button type="button" class="grab grab-to" title="Use the setting's current value on Move">●</button>
+    </div>
+    <div class="opts">
+      <select class="curve" aria-label="Curve">
+        <option value="0.5">Fast start</option>
+        <option value="1">Linear</option>
+        <option value="2">Slow start</option>
+        <option value="3">Late</option>
+      </select>
+      <select class="side" aria-label="Side">
+        <option value="neg">Left</option>
+        <option value="pos">Right</option>
+        <option value="both">Both</option>
+      </select>
+      <button type="button" class="remove" title="Remove target">×</button>
+    </div>
+    <p class="warn" hidden></p>
+  </li>
+</template>
+<script src="assets/editor.js"></script>
+</body>
+</html>

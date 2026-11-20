@@ -1,0 +1,56 @@
+{
+  "title": "Macros",
+  "children": [
+    {
+      "title": "Playing",
+      "lines": [
+        "Knobs 1-8: macros.",
+        "Shift+knob: fine.",
+        "Touch a knob to see",
+        "what it moves.",
+        "",
+        "Menu: knobs go to",
+        "Move and back.",
+        "Back: leave. Effects",
+        "stay where they are."
+      ]
+    },
+    {
+      "title": "Two-sided",
+      "lines": [
+        "Rests at the centre.",
+        "Left and right move",
+        "different targets,",
+        "like a DJ filter.",
+        "Turning through the",
+        "centre stops there."
+      ]
+    },
+    {
+      "title": "Editing",
+      "lines": [
+        "In a browser, open",
+        "move.local:7700/api",
+        "/remote-ui/module-",
+        "assets/macros/",
+        "web_ui.html",
+        "",
+        "Saves apply within",
+        "two seconds."
+      ]
+    },
+    {
+      "title": "No sound change?",
+      "lines": [
+        "Turn on Link in",
+        "Move's settings and",
+        "Move->Schwung in",
+        "Schwung Audio",
+        "settings. Without",
+        "both, Schwung FX do",
+        "not hear Move's",
+        "own tracks."
+      ]
+    }
+  ]
+}
