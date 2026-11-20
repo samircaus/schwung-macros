@@ -9,10 +9,12 @@
         "Touch a knob to see",
         "what it moves.",
         "",
-        "Menu: knobs go to",
-        "Move and back.",
-        "Back: leave. Effects",
-        "stay where they are."
+        "Shift+Note/Session:",
+        "knobs go to Move",
+        "and back.",
+        "Note/Session alone",
+        "works as usual.",
+        "Back: leave."
       ]
     },
     {

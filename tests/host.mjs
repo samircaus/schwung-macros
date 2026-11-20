@@ -14,6 +14,7 @@ export function makeHost({ config, loaded = {}, globals = {} } = {}) {
     if (config) files[CONFIG] = typeof config === "string" ? config : JSON.stringify(config);
     const host = {
         files, loaded, writes: [], leds: {}, screen: [], corun: null, overlay: null, exited: false,
+        shift: false, toMove: [],
     };
     const ctx = {
         console: { log() {} }, Math, JSON, String, Number, Array, Map, Set, Object, Date,
@@ -34,6 +35,8 @@ export function makeHost({ config, loaded = {}, globals = {} } = {}) {
         shadow_set_overtake_suppress_sysex: () => {},
         shadow_set_skip_led_clear: () => {},
         move_midi_internal_send: (p) => { host.leds[p[2]] = p[3]; return true; },
+        move_midi_inject_to_move: (p) => { host.toMove.push(p.join(",")); return true; },
+        shadow_get_shift_held: () => host.shift,
         host_exit_module: () => { host.exited = true; },
         clear_screen: () => { host.screen = []; },
         print: (x, y, text) => host.screen.push(text),
@@ -49,6 +52,7 @@ export function makeHost({ config, loaded = {}, globals = {} } = {}) {
         for (let i = 0; i < times; i++) ctx.onMidiMessageInternal([0xB0, 71 + knob, delta > 0 ? delta : 128 + delta]);
     };
     host.press = (cc) => ctx.onMidiMessageInternal([0xB0, cc, 127]);
+    host.release = (cc) => ctx.onMidiMessageInternal([0xB0, cc, 0]);
     host.touch = (knob, on) => ctx.onMidiMessageInternal([on ? 0x90 : 0x80, knob, on ? 127 : 0]);
     host.takeWrites = () => host.writes.splice(0);
     host.saved = () => JSON.parse(files[CONFIG]);

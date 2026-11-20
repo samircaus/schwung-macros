@@ -2,7 +2,7 @@
 
 Eight performance macros per [Ableton Move](https://www.ableton.com/move/) Set, as a [Schwung](https://github.com/charlesvestal/schwung) overtake module. Each of Move's knobs becomes one macro, and one macro can move any number of effect settings at once: close the master filter while the Arp's delay opens up, sweep a build, throw everything into reverb.
 
-While Macros is open, Move keeps its pads, step buttons, transport and track buttons, so you launch clips and scenes as usual and play the macros on the knobs. Macros are saved per Set and edited in a browser.
+While Macros is open, Move keeps its pads, step buttons, transport, track buttons and Note/Session button, so you switch views, launch clips and scenes as usual and play the macros on the knobs. Macros are saved per Set and edited in a browser.
 
 ## What you need
 
@@ -17,7 +17,8 @@ While Macros is open, Move keeps its pads, step buttons, transport and track but
 | Tools menu (Shift+Vol+Step 13) → Macros | Open. Knobs 1–8 are macros 1–8 |
 | Knob turn | Move that macro. Shift + turn is fine |
 | Knob touch | Show what the macro moves, with live values |
-| Menu | Knobs and screen go back to Move; again returns to the macros |
+| Shift + Note/Session | Knobs and screen go back to Move; again returns to the macros |
+| Note/Session | Works as usual (Session ↔ Note, hold to preview), in both knob modes |
 | Back | Leave. Effects stay where the macros left them |
 
 Knob rings light up with each macro's amount, so you see at a glance what is on. A `!` before a name means some of its effects are not loaded; `--` means none are.
@@ -60,7 +61,7 @@ Releases: push a `v<version>` tag that matches `module.json`; the workflow build
 
 ### How it works
 
-`ui.js` runs inside Schwung's shadow UI, which is what lets it write other modules' settings (`shadow_set_param`). It co-runs with Move (`shadow_corun_begin`, Move-native target) keeping only knobs, knob touch, the screen and Menu, and takes the screen back with `shadow_corun_overlay`. Schwung 1.9.x keeps the co-run constants private, so the module carries their values. Writes are coalesced per setting and sent a few per tick.
+`ui.js` runs inside Schwung's shadow UI, which is what lets it write other modules' settings (`shadow_set_param`). It co-runs with Move (`shadow_corun_begin`, Move-native target) keeping only knobs, knob touch, the screen and Note/Session (CC 50, "Menu" in Schwung's code), and takes the screen back with `shadow_corun_overlay`. Note/Session is kept only to catch Shift with it: every other press and release goes straight back to Move with `move_midi_inject_to_move`, and its LED stays Move's. Schwung 1.9.x keeps the co-run constants private, so the module carries their values. Writes are coalesced per setting and sent a few per tick.
 
 ## Licence
 

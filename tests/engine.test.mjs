@@ -12,7 +12,7 @@ const value = (writes, key) => {
 
 const oneMacro = (macro) => ({ v: 1, macros: [macro] });
 
-test("co-run keeps knobs, touch, screen and Menu, and takes the screen back", () => {
+test("co-run keeps knobs, touch, screen and Note/Session, and takes the screen back", () => {
     const h = makeHost({ loaded: MASTER });
     h.ctx.init(); h.tick(3);
     assert.equal(h.corun.target, 2);
@@ -20,11 +20,32 @@ test("co-run keeps knobs, touch, screen and Menu, and takes the screen back", ()
     assert.equal(h.overlay, 1);
 });
 
-test("Menu flips the knobs to Move and back without restarting the co-run", () => {
+test("Note/Session presses pass straight to Move, press and release", () => {
     const h = makeHost({ loaded: MASTER });
     h.ctx.init(); h.tick(2);
-    h.press(50); h.tick(); assert.equal(h.corun.keep, 1024); assert.equal(h.overlay, 0);
-    h.press(50); h.tick(); assert.equal(h.corun.keep, 3137); assert.equal(h.overlay, 1);
+    h.press(50); h.release(50); h.tick();
+    assert.deepEqual(h.toMove, ["11,176,50,127", "11,176,50,0"]);
+    assert.equal(h.corun.keep, 3137);                      // still on the macros
+});
+
+test("Shift + Note/Session flips the knobs to Move and back, and Move never sees it", () => {
+    const h = makeHost({ loaded: MASTER });
+    h.ctx.init(); h.tick(2);
+    h.shift = true;
+    h.press(50); h.release(50); h.tick();
+    assert.equal(h.corun.keep, 1024); assert.equal(h.overlay, 0);
+    h.press(50); h.release(50); h.tick();
+    assert.equal(h.corun.keep, 3137); assert.equal(h.overlay, 1);
+    assert.deepEqual(h.toMove, []);
+});
+
+test("in Move mode a plain Note/Session press still reaches Move", () => {
+    const h = makeHost({ loaded: MASTER });
+    h.ctx.init(); h.tick(2);
+    h.shift = true; h.press(50); h.release(50); h.shift = false;
+    h.press(50); h.release(50); h.tick();
+    assert.deepEqual(h.toMove, ["11,176,50,127", "11,176,50,0"]);
+    assert.equal(h.corun.keep, 1024);
 });
 
 test("macros sharing a parameter add up on its rest value", () => {

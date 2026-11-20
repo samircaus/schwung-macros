@@ -8,8 +8,11 @@
  *
  * While open, the tool co-runs with Move: it keeps the knobs, knob touch and
  * the screen; pads, steps, transport and track buttons stay with Move, so clips
- * and scenes can be launched as usual. Menu flips the knobs between the macros
- * and Move's own knobs (Move's screen comes back too); Back leaves the tool.
+ * and scenes can be launched as usual. Move's Note/Session button (CC 50, which
+ * Schwung calls "Menu") keeps working: the tool catches it only to see Shift +
+ * Note/Session, which flips the knobs between the macros and Move's own knobs
+ * (Move's screen comes back too), and passes every other press on to Move.
+ * Back leaves the tool.
  * Knob rings light up with each macro's amount, so a glance shows what is on.
  *
  * Config per Set: /data/UserData/schwung/set_state/<set uuid>/macros.json
@@ -36,7 +39,8 @@
  */
 
 const SCREEN_W = 128;
-const CC_KNOB0 = 71, CC_SHIFT = 49, CC_BACK = 51, CC_MENU = 50;
+const CC_KNOB0 = 71, CC_SHIFT = 49, CC_BACK = 51;
+const CC_NOTE_SESSION = 50;               /* Move's Note/Session toggle ("Menu" in Schwung) */
 const TOUCH_MAX = 7;                      /* capacitive knob touch notes 0-7 */
 const STATE_DIR = "/data/UserData/schwung/set_state/";
 const DEFAULT_FILE = "/data/UserData/schwung/tool_state/macros/default.json";
@@ -371,9 +375,13 @@ const GRP_OLED = num("CORUN_GRP_OLED", 1 << 0);
 const GRP_KNOBS = num("CORUN_GRP_KNOBS", 1 << 6);
 const GRP_TOUCH = num("CORUN_GRP_TOUCH", 1 << 11);
 const GRP_MENU = num("CORUN_GRP_MENU", 1 << 10);
-/* Two knob modes, switched with Menu. Everything not kept goes to Move:
- *   MACROS  the tool keeps knobs, knob touch, the screen and Menu
- *   MOVE    the tool keeps only Menu; knobs and screen are Move's own again */
+/* Two knob modes, switched with Shift + Note/Session. Everything not kept goes
+ * to Move:
+ *   MACROS  the tool keeps knobs, knob touch, the screen and Note/Session
+ *   MOVE    the tool keeps only Note/Session; knobs and screen are Move's again
+ * Note/Session is kept in both only to catch Shift with it; plain presses and
+ * releases are passed straight back to Move, so Note/Session and its
+ * hold-to-preview work as usual. Its LED stays Move's. */
 const KEEP_MACROS = GRP_OLED | GRP_KNOBS | GRP_TOUCH | GRP_MENU;
 const KEEP_MOVE = GRP_MENU;
 let knobMode = "macros";
@@ -388,7 +396,7 @@ function beginCorun(mode) {
         /* A Move-native co-run always hands the OLED to Move firmware, whatever
          * the keep mask says. shadow_corun_overlay(1, keep) takes the screen back
          * for us WITHOUT ending the co-run; overlay(0, keep) gives it to Move.
-         * So the session starts once, and Menu only flips the overlay. */
+         * So the session starts once, and Shift + Note/Session only flips the overlay. */
         if (!corunActive) shadow_corun_begin(TARGET_MOVE_NATIVE, 0, keep);
         if (typeof shadow_corun_overlay === "function") {
             shadow_corun_overlay(mode === "move" ? 0 : 1, keep);
@@ -397,8 +405,10 @@ function beginCorun(mode) {
             shadow_corun_begin(TARGET_MOVE_NATIVE, 0, keep);
         }
         /* LEDs: in MACROS we light the knob rings; Move paints everything else. */
+        /* Never own the Note/Session LED. 0 would mean "follow the input mask",
+         * so Move mode names a group with no LEDs instead. */
         if (typeof shadow_corun_set_led_keep_mask === "function")
-            shadow_corun_set_led_keep_mask(mode === "move" ? GRP_MENU : (GRP_KNOBS | GRP_MENU));
+            shadow_corun_set_led_keep_mask(mode === "move" ? GRP_TOUCH : GRP_KNOBS);
         /* Let Move's RGB pad/clip colours through. */
         if (typeof shadow_set_overtake_suppress_sysex === "function") shadow_set_overtake_suppress_sysex(0);
         corunStarted = true; corunActive = true; knobMode = mode;
@@ -424,7 +434,26 @@ function updateLeds() {
         const v = macros[i] ? Math.abs(macros[i].value) : 0;
         setCcLed(CC_KNOB0 + i, v <= 0 ? 0 : Math.round(16 + 108 * v), i);
     }
-    setCcLed(CC_MENU, 124, 8);
+}
+
+/* Note/Session: Shift + press flips the knobs; anything else goes to Move. */
+let swallowRelease = false;
+function shiftDown() {
+    if (typeof shadow_get_shift_held === "function") {
+        try { return !!shadow_get_shift_held(); } catch (e) { return shiftHeld; }
+    }
+    return shiftHeld;
+}
+function toMove(cc, value) {
+    try {
+        if (typeof move_midi_inject_to_move === "function") move_midi_inject_to_move([0x0B, 0xB0, cc, value]);
+    } catch (e) { log("could not pass CC " + cc + " to Move: " + e); }
+}
+function onNoteSession(value) {
+    const pressed = value > 63;
+    if (pressed && shiftDown()) { swallowRelease = true; toggleKnobMode(); return; }
+    if (!pressed && swallowRelease) { swallowRelease = false; return; }
+    toMove(CC_NOTE_SESSION, value);
 }
 
 function endCorun() {
@@ -488,7 +517,7 @@ function pctText(m) {
 function drawGrid() {
     clear_screen();
     print(0, 0, ("MACROS " + (setName || "")).slice(0, 14), 1);
-    print(SCREEN_W - 6 * 6, 0, "Menu>M", 1);
+    print(SCREEN_W - 6 * 6, 0, "Sh+N/S", 1);
     fill_rect(0, 9, SCREEN_W, 1, 1);
     for (let i = 0; i < 8; i++) {
         const col = i % 4, row = Math.floor(i / 4);
@@ -571,8 +600,8 @@ function onMidiMessageInternal(msg) {
             return;
         }
         if (d1 === CC_SHIFT) { shiftHeld = d2 > 63; return; }
-        if (d1 === CC_MENU && d2 > 63 && corunActive) { toggleKnobMode(); return; }
-        if ((d1 === CC_BACK || d1 === CC_MENU) && d2 > 63 && !corunActive) { leave(); return; }
+        if (d1 === CC_NOTE_SESSION && corunActive) { onNoteSession(d2); return; }
+        if ((d1 === CC_BACK || d1 === CC_NOTE_SESSION) && d2 > 63 && !corunActive) { leave(); return; }
         return;
     }
     if ((status === 0x90 || status === 0x80) && d1 <= TOUCH_MAX) {
